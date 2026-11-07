@@ -76,7 +76,8 @@ class EmbeddedObject extends DataObject
     {
         if ($url) {
             // array('image' => array('minImageWidth' => $this->Width, 'minImageHeight' => $this->Height)));
-            $info = Embed::create($url);
+            $embed = new Embed();
+            $info = $embed->get($url);
             $this->setFromEmbed($info);
         }
     }
