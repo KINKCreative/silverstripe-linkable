@@ -2,7 +2,7 @@
 
 namespace Sheadawson\Linkable\Models;
 
-use Embed\Adapters\Adapter;
+use Embed\Extractor;
 use Embed\Embed;
 use SilverStripe\ORM\DataObject;
 
@@ -83,19 +83,21 @@ class EmbeddedObject extends DataObject
     }
 
     /**
-     * @param Adapter $info
+     * @param Extractor $info
      */
-    public function setFromEmbed(Adapter $info)
+    public function setFromEmbed(Extractor $info)
     {
-        $this->Title = $info->getTitle();
-        $this->SourceURL = $info->getUrl();
-        $this->Width = $info->getWidth();
-        $this->Height = $info->getHeight();
-        $this->ThumbURL = $info->getImage();
-        $this->Description = $info->getDescription() ? $info->getDescription() : $info->getTitle();
-        $this->Type = $info->getType();
-        $embed = $info->getCode();
-        $this->EmbedHTML = $embed ? $embed : $this->EmbedHTML;
+        $this->Title = (string) ($info->title ?? '');
+        $this->SourceURL = (string) ($info->url ?? '');
+        $this->Width = $info->code?->width;
+        $this->Height = $info->code?->height;
+        $this->ThumbURL = (string) ($info->image ?? '');
+        $this->Description = (string) ($info->description ?? $this->Title);
+        $this->Type = (string) ($info->getOEmbed()->get('type') ?: 'video');
+
+        if ($info->code) {
+            $this->EmbedHTML = $info->code->html ?: $this->EmbedHTML;
+        }
     }
 
     /**
